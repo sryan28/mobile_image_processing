@@ -9,7 +9,7 @@ import android.widget.Toast;
 public class BaseImageProcessingActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "mobileimageprocessing.com.mobileimageprocessing.imageResult";
     private long[] times;
-    public static final int THREAD_COUNT = 2;
+    public static final int THREAD_COUNT = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +25,7 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         MainActivity.input = bitmapOutput;
         setResult(RESULT_OK, output);
         String toastMsg = String.format("Sequential: %d\nThreads: %d\nPipes: %d", times[0], times[1], times[2]);
+        System.out.println(toastMsg);
         Toast toast = Toast.makeText(this.getApplicationContext(), toastMsg, Toast.LENGTH_LONG);
         toast.show();
         finish();
@@ -85,36 +86,65 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         return image;
     }
 
-    public static Bitmap bitmapFromArray(int[][] array) {
-        long startTime = System.currentTimeMillis();
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
-        Bitmap bmp = Bitmap.createBitmap(array.length, array[0].length, conf);
-
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[0].length; j++) {
-                bmp.setPixel(i, j, array[i][j]);
-            }
-        }
-        long endTime = System.currentTimeMillis();
-        System.out.println("b2a: "+ (endTime-startTime));
-        return bmp;
-    }
-
-    public static int[][] arrayFromBitmap(Bitmap map) {
-        long startTime = System.currentTimeMillis();
-        int width = map.getWidth();
-        int height = map.getHeight();
-        int[][] result = new int[width][height];
-
+    //
+//    public static Bitmap bitmapFromArray(int[][] array) {
+//        long startTime = System.currentTimeMillis();
+//        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+//        Bitmap bmp = Bitmap.createBitmap(array.length, array[0].length, conf);
+//
+//        for (int i = 0; i < array.length; i++) {
+//            for (int j = 0; j < array[0].length; j++) {
+//                bmp.setPixel(i, j, array[i][j]);
+//            }
+//        }
+//        long endTime = System.currentTimeMillis();
+//        System.out.println("b2a: " + (endTime - startTime));
+//        return bmp;
+//    }
+    public static Bitmap bitmapFromArray(int[][] pixels2d) {
+        int width = pixels2d.length;
+        int height = pixels2d[0].length;
+        int[] pixels = new int[width * height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                result[i][j] = map.getPixel(i, j);
+                pixels[i+width*j] = pixels2d[i][j];
+            }
+        }
+        return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
+    }
+
+    //    public static int[][] arrayFromBitmap(Bitmap map) {
+//        long startTime = System.currentTimeMillis();
+//        int width = map.getWidth();
+//        int height = map.getHeight();
+//        int[][] result = new int[width][height];
+//
+//        for (int i = 0; i < width; i++) {
+//            for (int j = 0; j < height; j++) {
+//                result[i][j] = map.getPixel(i, j);
+//            }
+//        }
+//        long endTime = System.currentTimeMillis();
+//        System.out.println("a2b: "+ (endTime-startTime));
+//        return result;
+//
+//    }
+    public static int[][] arrayFromBitmap(Bitmap source) {
+        long startTime = System.currentTimeMillis();
+        int width = source.getWidth();
+        int height = source.getHeight();
+        int[][] result = new int[width][height];
+        int[] pixels = new int[width * height];
+        source.getPixels(pixels, 0, width, 0, 0, width, height);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                result[i][j] = pixels[i+width*j];
             }
         }
         long endTime = System.currentTimeMillis();
-        System.out.println("a2b: "+ (endTime-startTime));
+        System.out.println("a2b: " + (endTime - startTime));
         return result;
-
     }
+
 
 }
