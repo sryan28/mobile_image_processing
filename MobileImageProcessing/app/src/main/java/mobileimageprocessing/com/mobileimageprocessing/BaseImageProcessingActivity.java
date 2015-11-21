@@ -9,10 +9,10 @@ import android.widget.Toast;
 public class BaseImageProcessingActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "mobileimageprocessing.com.mobileimageprocessing.imageResult";
     private long[] times;
+    public static final int THREAD_COUNT = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        System.out.println("works2");
         super.onCreate(savedInstanceState);
         times = new long[3];
         Bitmap bitmap = MainActivity.bitmap;
@@ -51,14 +51,14 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
 
     private int[][] processImageThreadsTimed(int[][] image) {
         long startTime = System.currentTimeMillis();
-        int[][] out = processImageThreads(image);
+        int[][] out = processImageThreads(image, THREAD_COUNT);
         long endTime = System.currentTimeMillis();
         times[1] = endTime - startTime;
         return out;
 
     }
 
-    public int[][] processImageThreads(int[][] image) {
+    public int[][] processImageThreads(int[][] image, int threads) {
         for (int j = 0; j < image.length / 2; j++) {
             for (int i = 0; i < image[0].length; i++) {
                 image[j][i] = 0;
@@ -86,7 +86,7 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
     }
 
     public static Bitmap bitmapFromArray(int[][] array) {
-
+        long startTime = System.currentTimeMillis();
         Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
         Bitmap bmp = Bitmap.createBitmap(array.length, array[0].length, conf);
 
@@ -95,10 +95,13 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
                 bmp.setPixel(i, j, array[i][j]);
             }
         }
+        long endTime = System.currentTimeMillis();
+        System.out.println("b2a: "+ (endTime-startTime));
         return bmp;
     }
 
     public static int[][] arrayFromBitmap(Bitmap map) {
+        long startTime = System.currentTimeMillis();
         int width = map.getWidth();
         int height = map.getHeight();
         int[][] result = new int[width][height];
@@ -108,6 +111,8 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
                 result[i][j] = map.getPixel(i, j);
             }
         }
+        long endTime = System.currentTimeMillis();
+        System.out.println("a2b: "+ (endTime-startTime));
         return result;
 
     }

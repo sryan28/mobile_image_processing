@@ -22,6 +22,18 @@
         android:id="@+id/imageView"
         android:layout_below="@+id/radioGroup" />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:layout_below="@+id/radioGroup" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView3"
+        android:layout_below="@+id/radioGroup" />
+
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"

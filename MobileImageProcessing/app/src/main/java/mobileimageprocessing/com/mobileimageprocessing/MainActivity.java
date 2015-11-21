@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inJustDecodeBounds = true;
                     this.bitmap = BitmapFactory.decodeStream(iStream);
-                    System.out.println("works");
                     //This will get the radiobutton in the radiogroup that is checked
                     RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroup);
                     RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
