@@ -20,8 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
-        android:layout_below="@+id/radio"
-         />
+        android:layout_below="@+id/radioGroup" />
 
     <RadioGroup
         android:id="@+id/radioGroup"

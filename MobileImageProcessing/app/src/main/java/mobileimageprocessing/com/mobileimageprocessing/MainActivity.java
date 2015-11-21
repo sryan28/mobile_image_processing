@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     Button imageGallery;
     ImageView imageDisplay;
     public static final String EXTRA_MESSAGE = "mobileimageprocessing.com.mobileimageprocessing.imageResult";
+    public static Bitmap bitmap;
+    public static Bitmap input;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,10 +96,12 @@ public class MainActivity extends AppCompatActivity {
 //                    System.out.println(path);
                     Bitmap btemp = BitmapFactory.decodeStream(iStream);
                     imageDisplay.setImageBitmap(btemp);
+                    System.out.println("works");
                     /// use btemp Image file
                     RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroup);
-                    Intent processIntent = new Intent(this, BaseImageProcessingActivity.class);
-                    processIntent.putExtra(this.EXTRA_MESSAGE, btemp);
+                    Intent processIntent = new Intent(this.getApplicationContext(), BaseImageProcessingActivity.class);
+                    //processIntent.putExtra(this.EXTRA_MESSAGE, btemp);
+                    bitmap = btemp;
                     startActivityForResult(processIntent,2);
 // This will get the radiobutton in the radiogroup that is checked
 //                    RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
@@ -115,8 +119,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 2:
                 if(data!=null){
-                    Bitmap btemp = data.getParcelableExtra(this.EXTRA_MESSAGE);
-                    imageDisplay.setImageBitmap(btemp);
+//                    Bitmap btemp = data.getParcelableExtra(this.EXTRA_MESSAGE);
+//                    Bitmap btemp = BaseImageProcessingActivity.bOutput;
+                    imageDisplay.setImageBitmap(input);
+
 
                 }
         }
