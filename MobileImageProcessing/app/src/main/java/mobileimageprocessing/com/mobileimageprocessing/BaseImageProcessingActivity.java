@@ -28,6 +28,11 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
 
     }
     private int[][] processImageSequential(int[][] image){
+        for(int[] col : image){
+            for(int row:col){
+                col[row] *=0.5;
+            }
+        }
         return image;
     }
     public static Bitmap bitmapFromArray(int[][] pixels2d){

@@ -96,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
                     imageDisplay.setImageBitmap(btemp);
                     /// use btemp Image file
                     RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroup);
+                    Intent processIntent = new Intent(this, BaseImageProcessingActivity.class);
+                    processIntent.putExtra(this.EXTRA_MESSAGE, btemp);
+                    startActivityForResult(processIntent,2);
 // This will get the radiobutton in the radiogroup that is checked
 //                    RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
 //                    switch(checkedRadioButton.getId()){
