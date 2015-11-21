@@ -86,38 +86,66 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         }
         return image;
     }
-    public static Bitmap bitmapFromArray(int[][] pixels2d){
-        int width = pixels2d.length;
-        int height = pixels2d[0].length;
-        int[] pixels = new int[width * height];
-        int pixelsIndex = 0;
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                pixels[pixelsIndex] = pixels2d[i][j];
-                pixelsIndex ++;
+
+//    public static Bitmap bitmapFromArray(int[][] pixels2d){
+//        int width = pixels2d.length;
+//        int height = pixels2d[0].length;
+//        int[] pixels = new int[width * height];
+//        int pixelsIndex = 0;
+//        for (int i = 0; i < width; i++)
+//        {
+//            for (int j = 0; j < height; j++)
+//            {
+//                pixels[pixelsIndex] = pixels2d[i][j];
+//                pixelsIndex ++;
+//            }
+//        }
+//        return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
+//    }
+//
+//    public static int[][] arrayFromBitmap(Bitmap source){
+//        int width = source.getWidth();
+//        int height = source.getHeight();
+//        int[][] result = new int[width][height];
+//        int[] pixels = new int[width*height];
+//        source.getPixels(pixels, 0, width, 0, 0, width, height);
+//        int pixelsIndex = 0;
+//        for (int i = 0; i < width; i++)
+//        {
+//            for (int j = 0; j < height; j++)
+//            {
+//                result[i][j] =  pixels[pixelsIndex];
+//                pixelsIndex++;
+//            }
+//        }
+//        return result;
+//    }
+
+    public static Bitmap bitmapFromArray(int[][] array) {
+
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        Bitmap bmp = Bitmap.createBitmap(array.length, array[0].length, conf);
+
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[0].length; j++) {
+                bmp.setPixel(i, j, array[i][j]);
             }
         }
-        return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
+        return bmp;
     }
 
-    public static int[][] arrayFromBitmap(Bitmap source){
-        int width = source.getWidth();
-        int height = source.getHeight();
+    public static int[][] arrayFromBitmap(Bitmap map) {
+        int width = map.getWidth();
+        int height = map.getHeight();
         int[][] result = new int[width][height];
-        int[] pixels = new int[width*height];
-        source.getPixels(pixels, 0, width, 0, 0, width, height);
-        int pixelsIndex = 0;
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                result[i][j] =  pixels[pixelsIndex];
-                pixelsIndex++;
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                result[i][j] = map.getPixel(i, j);
             }
         }
         return result;
+
     }
 
 }
