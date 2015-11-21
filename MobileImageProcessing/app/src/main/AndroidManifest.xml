@@ -35,6 +35,11 @@
             android:name=".RotateImageProcessingActivity"
             android:label="BaseImageProcessingActivity"
             android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".ScaleImageProcessingActivity"
+            android:label="BaseImageProcessingActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
 
         </activity>
     </application>
