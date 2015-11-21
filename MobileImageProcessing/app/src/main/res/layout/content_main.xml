@@ -32,24 +32,25 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New RadioButton"
-            android:id="@+id/radioButton3"
-            android:layout_below="@+id/radioButton2"
-            android:layout_alignStart="@+id/radioButton2" />
+            android:text="Pixelation"
+            android:id="@+id/radioPixelate"
+            android:layout_below="@+id/radioRotate"
+            android:layout_alignStart="@+id/radioRotate"
+            android:checked="true" />
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New RadioButton"
-            android:id="@+id/radioButton2"
-            android:layout_below="@+id/radioButton"
-            android:layout_alignStart="@+id/radioButton" />
+            android:text="Rotate"
+            android:id="@+id/radioRotate"
+            android:layout_below="@+id/radioScale"
+            android:layout_alignStart="@+id/radioScale" />
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New RadioButton"
-            android:id="@+id/radioButton"
+            android:text="Scale"
+            android:id="@+id/radioScale"
             android:layout_alignTop="@+id/btnGallery"
             android:layout_alignEnd="@+id/imageView" />
     </RadioGroup>

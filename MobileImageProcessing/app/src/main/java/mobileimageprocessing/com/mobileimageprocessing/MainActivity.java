@@ -1,12 +1,10 @@
 package mobileimageprocessing.com.mobileimageprocessing;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -91,49 +89,33 @@ public class MainActivity extends AppCompatActivity {
                     }
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inJustDecodeBounds = true;
-//                    System.out.println(selectedImagePath);
-//                    String path = "content://"+selectedImageUri.getAuthority()+""+selectedImageUri.getPath();
-//                    System.out.println(path);
-                    Bitmap btemp = BitmapFactory.decodeStream(iStream);
-
-                    imageDisplay.setImageBitmap(btemp);
+                    this.bitmap = BitmapFactory.decodeStream(iStream);
                     System.out.println("works");
-                    /// use btemp Image file
+                    //This will get the radiobutton in the radiogroup that is checked
                     RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroup);
-                    Intent processIntent = new Intent(this.getApplicationContext(), BaseImageProcessingActivity.class);
-//                    //processIntent.putExtra(this.EXTRA_MESSAGE, btemp);
-                    bitmap = btemp;
+                    RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+                    Class activityClass = BaseImageProcessingActivity.class;
+                    switch(checkedRadioButton.getId()){
+                        case R.id.radioScale:
+                            break;
+                        case R.id.radioRotate:
+                            activityClass = RotateImageProcessingActivity.class;
+                            break;
+                        case R.id.radioPixelate:
+                            activityClass = PixelateImageProcessingActivity.class;
+                            break;
+                        default:
+                    }
+                    System.out.println("Starting : "+activityClass.getName());
+                    Intent processIntent = new Intent(this.getApplicationContext(), activityClass);
                     startActivityForResult(processIntent,2);
-
-//                    int[][] seqRes = rotateImageClockwise(arrayFromBitmap(btemp), btemp.getHeight(), btemp.getWidth());
-//                    Bitmap bitmapOutput = bitmapFromArray(seqRes);
-//
-//                    imageDisplay.setImageBitmap(bitmapOutput);
-                    /// use btemp Image file
-
-// This will get the radiobutton in the radiogroup that is checked
-//                    RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
-//                    switch(checkedRadioButton.getId()){
-//                        case R.id.radioButton:
-//                            break;
-//                        case R.id.radioButton2:
-//                            break;
-//                        case R.id.radioButton3:
-//                            break;
-//                        default:
-//                            return;
-//                    }
                 }
                 break;
             case 2:
                 if(data!=null){
-//                    Bitmap btemp = data.getParcelableExtra(this.EXTRA_MESSAGE);
-//                    Bitmap btemp = BaseImageProcessingActivity.bOutput;
                     imageDisplay.setImageBitmap(input);
-
                 }
         }
 
     }
-//
 }

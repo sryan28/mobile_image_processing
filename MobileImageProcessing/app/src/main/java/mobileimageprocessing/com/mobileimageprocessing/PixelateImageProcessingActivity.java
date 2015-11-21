@@ -42,4 +42,12 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
         }
         return image;
     }
+    @Override
+    public int[][] processImageThreads(int[][] image) {
+        return image;
+    }
+    @Override
+    public int[][] processImagePipes(int[][] image) {
+        return image;
+    }
 }
