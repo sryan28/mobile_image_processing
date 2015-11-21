@@ -86,21 +86,6 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         return image;
     }
 
-    //
-//    public static Bitmap bitmapFromArray(int[][] array) {
-//        long startTime = System.currentTimeMillis();
-//        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
-//        Bitmap bmp = Bitmap.createBitmap(array.length, array[0].length, conf);
-//
-//        for (int i = 0; i < array.length; i++) {
-//            for (int j = 0; j < array[0].length; j++) {
-//                bmp.setPixel(i, j, array[i][j]);
-//            }
-//        }
-//        long endTime = System.currentTimeMillis();
-//        System.out.println("b2a: " + (endTime - startTime));
-//        return bmp;
-//    }
     public static Bitmap bitmapFromArray(int[][] pixels2d) {
         int width = pixels2d.length;
         int height = pixels2d[0].length;
@@ -113,22 +98,6 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
     }
 
-    //    public static int[][] arrayFromBitmap(Bitmap map) {
-//        long startTime = System.currentTimeMillis();
-//        int width = map.getWidth();
-//        int height = map.getHeight();
-//        int[][] result = new int[width][height];
-//
-//        for (int i = 0; i < width; i++) {
-//            for (int j = 0; j < height; j++) {
-//                result[i][j] = map.getPixel(i, j);
-//            }
-//        }
-//        long endTime = System.currentTimeMillis();
-//        System.out.println("a2b: "+ (endTime-startTime));
-//        return result;
-//
-//    }
     public static int[][] arrayFromBitmap(Bitmap source) {
         long startTime = System.currentTimeMillis();
         int width = source.getWidth();
@@ -142,7 +111,7 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
             }
         }
         long endTime = System.currentTimeMillis();
-        System.out.println("a2b: " + (endTime - startTime));
+        System.out.println("a from b: " + (endTime - startTime));
         return result;
     }
 
