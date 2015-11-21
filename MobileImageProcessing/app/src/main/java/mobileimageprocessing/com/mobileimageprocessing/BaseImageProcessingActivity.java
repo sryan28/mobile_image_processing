@@ -17,8 +17,8 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         times = new long[3];
         Bitmap bitmap = MainActivity.bitmap;
         int[][] seqRes = processImageSequentialTimed(arrayFromBitmap(bitmap));
-        processImagePipesTimed(arrayFromBitmap(bitmap));
-        processImageThreadsTimed(arrayFromBitmap(bitmap));
+//        processImagePipesTimed(arrayFromBitmap(bitmap));
+//        processImageThreadsTimed(arrayFromBitmap(bitmap));
         Bitmap bitmapOutput = bitmapFromArray(seqRes);
 
         Intent output = new Intent();
@@ -85,31 +85,39 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         return image;
     }
 
-    public static Bitmap bitmapFromArray(int[][] array) {
-
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
-        Bitmap bmp = Bitmap.createBitmap(array.length, array[0].length, conf);
-
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[0].length; j++) {
-                bmp.setPixel(i, j, array[i][j]);
-            }
-        }
-        return bmp;
-    }
-
-    public static int[][] arrayFromBitmap(Bitmap map) {
-        int width = map.getWidth();
-        int height = map.getHeight();
-        int[][] result = new int[width][height];
-
+    public static Bitmap bitmapFromArray(int[][] pixels2d) {
+        int width = pixels2d.length;
+        int height = pixels2d[0].length;
+        int[] pixels = new int[width * height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                result[i][j] = map.getPixel(i, j);
+                pixels[i+width*j] = pixels2d[i][j];
             }
         }
-        return result;
+        System.out.println("after");
+        System.out.println(width);
+        System.out.println(height);
+        return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
+    }
 
+    public static int[][] arrayFromBitmap(Bitmap source) {
+        long startTime = System.currentTimeMillis();
+        int width = source.getWidth();
+        int height = source.getHeight();
+        int[][] result = new int[width][height];
+        int[] pixels = new int[width * height];
+        source.getPixels(pixels, 0, width, 0, 0, width, height);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                result[i][j] = pixels[i+width*j];
+            }
+        }
+        long endTime = System.currentTimeMillis();
+        System.out.println("a from b: " + (endTime - startTime));
+        System.out.println("before");
+        System.out.println(width);
+        System.out.println(height);
+        return result;
     }
 
 }
