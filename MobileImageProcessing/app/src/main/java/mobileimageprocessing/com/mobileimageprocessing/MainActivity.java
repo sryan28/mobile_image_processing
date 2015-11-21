@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     Class activityClass = BaseImageProcessingActivity.class;
                     switch(checkedRadioButton.getId()){
                         case R.id.radioScale:
+                            activityClass = ScaleImageProcessingActivity.class;
                             break;
                         case R.id.radioRotate:
                             activityClass = RotateImageProcessingActivity.class;
