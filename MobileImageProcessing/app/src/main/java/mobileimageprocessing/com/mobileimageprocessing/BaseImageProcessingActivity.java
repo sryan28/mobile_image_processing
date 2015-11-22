@@ -10,12 +10,17 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "mobileimageprocessing.com.mobileimageprocessing.imageResult";
     private long[] times;
     public static final int THREAD_COUNT = 4;
+    public int threads;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         times = new long[3];
         Bitmap bitmap = MainActivity.bitmap;
+
+//        Bundle extras = getIntent().getExtras();
+//        threads = extras.getInt("threadsCount");
+
         int[][] seqRes = processImageSequentialTimed(arrayFromBitmap(bitmap));
         processImagePipesTimed(arrayFromBitmap(bitmap));
         processImageThreadsTimed(arrayFromBitmap(bitmap));

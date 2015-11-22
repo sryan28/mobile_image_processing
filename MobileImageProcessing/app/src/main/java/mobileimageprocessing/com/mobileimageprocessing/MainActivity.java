@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,9 +23,12 @@ public class MainActivity extends AppCompatActivity {
 
     Button imageGallery;
     ImageView imageDisplay;
+    EditText threadsCount;
+
     public static final String EXTRA_MESSAGE = "mobileimageprocessing.com.mobileimageprocessing.imageResult";
     public static Bitmap bitmap;
     public static Bitmap input;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         imageDisplay = ((ImageView) findViewById(R.id.imageView));
+//        threadsCount = (EditText)findViewById(R.id.numThreads);
+
     }
 
     @Override
@@ -90,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inJustDecodeBounds = true;
                     this.bitmap = BitmapFactory.decodeStream(iStream);
+
                     //This will get the radiobutton in the radiogroup that is checked
                     RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroup);
                     RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
@@ -107,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     System.out.println("Starting : "+activityClass.getName());
                     Intent processIntent = new Intent(this.getApplicationContext(), activityClass);
+//                    processIntent.putExtra("threadsCount", Integer.parseInt(threadsCount.getText().toString()));
                     startActivityForResult(processIntent,2);
                 }
                 break;
