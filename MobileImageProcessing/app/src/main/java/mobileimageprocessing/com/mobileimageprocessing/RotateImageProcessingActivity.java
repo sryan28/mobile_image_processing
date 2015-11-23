@@ -1,102 +1,113 @@
 package mobileimageprocessing.com.mobileimageprocessing;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
 
     @Override
     public int[][] processImageSequential(int[][] image) {
-        return rotateImageClockWise(image, image[0].length, image.length, 0);
-    }
-
-    public int[][] rotateImageOneEighty(int[][] image, int height, int width, int start){
-        int[][] newImage = new int[height][width];
-
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                newImage[i][j] = image[width-1-j][height-1-j];
-            }
-        }
-
-        return newImage;
+        return rotateImageCounterClockWise(image, image[0].length, image.length, 0, 1);
     }
 
     @Override
     public int[][] processImageThreads(int[][] image, int threadCount) {
-        Thread[] threads = new Thread[threadCount];
-        int numRows = image.length/threadCount;
-        System.out.println("numrow:" + numRows);
+        Callable<int[][]> callable;
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        List<Callable<int[][]>> tasks = new ArrayList<Callable<int[][]>>();
+        List<Future<int[][]>> list;
+
+        int[][] newImage = new int[image.length][image[0].length];
 
         for (int i = 0; i < threadCount; i++) {
-            threads[i] = new Thread(new RotateRunnable(image, image[0].length, numRows, i*numRows));
-            threads[i].run();
+            callable = new RotateCallable(image, image[0].length, image.length, i, threadCount);
+            tasks.add(callable);
         }
 
-        for (int i = 0; i < threadCount; i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        try {
+            list = executorService.invokeAll(tasks);
+            for (int i = 0; i < list.size(); i++) {
+                System.arraycopy(list.get(i).get(), 0, newImage, i * (image.length / threadCount), (image.length / threadCount));
+//                System.arraycopy(list.get(i).get(), 0, newImage, i * (image[0].length / threadCount), image[0].length/threadCount);
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-
-        return image;
+        return newImage;
     }
 
-    public static int[][] rotateImageClockWise(int[][] image, int height, int width, int start){
-        int newHeight = width;
-        int newWidth = height;
+    public static int[][] rotateImageOneEighty(int[][] image, int height, int width, int start, int threadCount){
+        int newWidth = width/threadCount;
+        int startColumn = start*newWidth;
 
-        int[][] newImage = new int[newWidth][newHeight];
+        int[][] newImage = new int[newWidth][height];
 
-        for (int i = 0; i < newWidth; i++) {
-            for (int j = 0; j < newHeight; j++) {
-                newImage[i][j] = image[start+j][height-1-i];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < newWidth; j++) {
+                newImage[j][i] = image[width-1-j-startColumn][height-1-i];
             }
         }
 
         return newImage;
     }
 
-    public int[][] rotateImageCounterClockWise(int[][] image, int height, int width){
+    public static int[][] rotateImageClockWise(int[][] image, int height, int width, int start, int threadCount){
         int newHeight = width;
-        int newWidth = height;
+        int newWidth = height/threadCount;
+        int startColumn = start*newWidth;
 
         int[][] newImage = new int[newWidth][newHeight];
 
-        for (int i = 0; i < newWidth; i++) {
-            for (int j = 0; j < newHeight; j++) {
-                newImage[i][j] = image[width-1-j][i];
+        for (int i = 0; i < newHeight; i++) {
+            for (int j = 0; j < newWidth; j++) {
+                newImage[j][i] = image[i][-startColumn+height-1-j];
             }
         }
 
         return newImage;
     }
 
-    private class RotateRunnable implements Runnable {
+    public static int[][] rotateImageCounterClockWise(int[][] image, int height, int width, int start, int threadCount){
+        int newHeight = width;
+        int newWidth = height/threadCount;
+        int startColumn = start*newWidth;
+
+        int[][] newImage = new int[newWidth][newHeight];
+
+        for (int i = 0; i < newHeight; i++) {
+            for (int j = 0; j < newWidth; j++) {
+                newImage[j][i] = image[width-1-i][startColumn+j];
+            }
+        }
+
+        return newImage;
+    }
+
+    private class RotateCallable implements Callable<int[][]> {
         int[][] image;
         int start;
         int width;
         int height;
+        int threadCount;
 
-        RotateRunnable(int[][] image, int height, int width,  int start) {
+        public RotateCallable(int[][] image, int height, int width, int start, int threadCount) {
             this.image = image;
             this.width = width;
             this.height = height;
             this.start = start;
+            this.threadCount = threadCount;
         }
 
         @Override
-        public void run() {
-            RotateImageProcessingActivity.rotateImageClockWise(image, height, width, start);
+        public int[][] call() throws Exception {
+            return RotateImageProcessingActivity.rotateImageOneEighty(image, height, width, start, threadCount);
         }
     }
 }
