@@ -1,14 +1,16 @@
 package mobileimageprocessing.com.mobileimageprocessing;
 
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 
 /**
  * Created by arthurkam on 2015-11-21.
  */
 
 public class PixelateImageProcessingActivity extends BaseImageProcessingActivity {
-    private static final int X_BOX = 100;
-    private static final int Y_BOX = 100;
+    private static final int X_BOX = 120;
+    private static final int Y_BOX = 120;
 
     @Override
     public int[][] processImageSequential(int[][] image) {
@@ -50,8 +52,6 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
         int chunksPerThread = chunks / threadCount;
         // Extra chunks to give out to the first n threads
         int extraChunks = chunks % threadCount;
-        // remaining part that will be fitted into the the last thread
-        int xRemainder = image.length % (X_BOX * threadCount);
         int previousEnd = 0;
         for (int i = 0; i < threadCount; i++) {
             int start = previousEnd;
@@ -65,7 +65,7 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
             }
             previousEnd = end;
             threads[i] = new Thread(new PixelateRunnable(image, start, end, 0, image[0].length));
-            threads[i].run();
+            threads[i].start();
         }
         for (int i = 0; i < threadCount; i++) {
             try {
@@ -126,6 +126,127 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
 
     @Override
     public int[][] processImagePipes(int[][] image) {
+        return processImageLooper(image);
+    }
+
+    public int[][] processImageLooper(int[][] image) {
+        int threadCounter = 0;
+        LooperThread[] threads = new LooperThread[THREAD_COUNT];
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            threads[i] = new LooperThread();
+            threads[i].start();
+        }
+        //return image;
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            // Ensure the mHandler is existing or we get NPEs
+            threads[i].waitForLooper();
+        }
+        for (int i = 0; i < image.length; i += X_BOX) {
+            int xBound = i + X_BOX > image.length ? image.length : i + X_BOX;
+            for (int j = 0; j < image[i].length; j += Y_BOX) {
+                int yBound = j + Y_BOX > image[0].length ? image[0].length : j + Y_BOX;
+                threads[threadCounter].addJob(new PixelateLooperRunnable(image, i, xBound, j, yBound));
+                threadCounter++;
+                threadCounter %= THREAD_COUNT;
+            }
+        }
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            threads[i].exitLooperSafely();
+        }
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Done!");
         return image;
+
+    }
+
+    private class LooperThread extends Thread {
+        public Handler mHandler;
+
+        public LooperThread() {
+
+        }
+
+        @Override
+        public void run() {
+            Looper.prepare();
+            synchronized (this) {
+                mHandler = new Handler();
+                System.out.println("Handler created");
+                notifyAll();
+            }
+
+            Looper.loop();
+        }
+
+        public void addJob(Runnable r) {
+            this.mHandler.post(r);
+        }
+
+        public void exitLooperSafely() {
+            this.mHandler.getLooper().quitSafely();
+        }
+
+        public void waitForLooper() {
+            synchronized (this) {
+                while (mHandler == null) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }
+    }
+
+    private class PixelateLooperRunnable implements Runnable {
+
+        int[][] image;
+        int xStart;
+        int xEnd;
+        int yStart;
+        int yEnd;
+
+        PixelateLooperRunnable(int[][] image, int xStart, int xEnd, int yStart, int yEnd) {
+            this.image = image;
+            this.xStart = xStart;
+            this.xEnd = xEnd;
+            this.yStart = yStart;
+            this.yEnd = yEnd;
+        }
+
+        @Override
+        public void run() {
+            int redSum = 0;
+            int greenSum = 0;
+            int blueSum = 0;
+            int counter = 0;
+            for (int x = xStart; x < xEnd; x++) {
+                for (int y = yStart; y < yEnd; y++) {
+                    redSum += Color.red(image[x][y]);
+                    greenSum += Color.green(image[x][y]);
+                    blueSum += Color.blue(image[x][y]);
+                    counter++;
+                }
+            }
+            redSum /= counter;
+            greenSum /= counter;
+            blueSum /= counter;
+            for (int x = xStart; x < xEnd; x++) {
+                for (int y = yStart; y < yEnd; y++) {
+                    image[x][y] = Color.argb(255, redSum, greenSum, blueSum);
+                }
+            }
+        }
     }
 }
+

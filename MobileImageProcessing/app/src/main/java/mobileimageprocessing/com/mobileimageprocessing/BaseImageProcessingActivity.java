@@ -7,25 +7,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 public class BaseImageProcessingActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "mobileimageprocessing.com.mobileimageprocessing.imageResult";
     private long[] times;
-    public static final int THREAD_COUNT = 4;
-    public int threads;
+    public static final int THREAD_COUNT = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         times = new long[3];
         Bitmap bitmap = MainActivity.bitmap;
-
-//        Bundle extras = getIntent().getExtras();
-//        threads = extras.getInt("threadsCount");
-
         int[][] seqRes = processImageSequentialTimed(arrayFromBitmap(bitmap));
-        processImagePipesTimed(arrayFromBitmap(bitmap));
         processImageThreadsTimed(arrayFromBitmap(bitmap));
+        processImagePipesTimed(arrayFromBitmap(bitmap));
         Bitmap bitmapOutput = bitmapFromArray(seqRes);
-
         Intent output = new Intent();
         MainActivity.input = bitmapOutput;
         setResult(RESULT_OK, output);
@@ -97,7 +90,7 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         int[] pixels = new int[width * height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                pixels[i+width*j] = pixels2d[i][j];
+                pixels[i + width * j] = pixels2d[i][j];
             }
         }
         return Bitmap.createBitmap(pixels, width, height, Bitmap.Config.ARGB_8888);
@@ -112,7 +105,7 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         source.getPixels(pixels, 0, width, 0, 0, width, height);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                result[i][j] = pixels[i+width*j];
+                result[i][j] = pixels[i + width * j];
             }
         }
         long endTime = System.currentTimeMillis();
