@@ -15,9 +15,10 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         times = new long[3];
         Bitmap bitmap = MainActivity.bitmap;
-        int[][] seqRes = processImageSequentialTimed(arrayFromBitmap(bitmap));
-        processImageThreadsTimed(arrayFromBitmap(bitmap));
-        processImagePipesTimed(arrayFromBitmap(bitmap));
+        int[][] image = arrayFromBitmap(bitmap);
+        int[][] seqRes = processImageSequentialTimed(cloneInt2dArray(image));
+        processImageThreadsTimed(cloneInt2dArray(image));
+        processImagePipesTimed(cloneInt2dArray(image));
         Bitmap bitmapOutput = bitmapFromArray(seqRes);
         Intent output = new Intent();
         MainActivity.input = bitmapOutput;
@@ -82,6 +83,17 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
             }
         }
         return image;
+    }
+
+    public static int[][] cloneInt2dArray(int[][] image){
+        int[][] cloneCopy = new int[image.length][];
+        for(int i=0;i<image.length;i++){
+            cloneCopy[i] = new int[image[i].length];
+            for (int j=0;j<image[i].length;j++){
+                cloneCopy[i][j] = image[i][j];
+            }
+        }
+        return  cloneCopy;
     }
 
     public static Bitmap bitmapFromArray(int[][] pixels2d) {
