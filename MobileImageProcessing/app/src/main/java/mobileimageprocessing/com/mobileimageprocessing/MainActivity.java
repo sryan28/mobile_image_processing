@@ -23,9 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button imageGallery;
     ImageView imageDisplay;
-    EditText threadsCount;
 
-    public static final String EXTRA_MESSAGE = "mobileimageprocessing.com.mobileimageprocessing.imageResult";
     public static Bitmap bitmap;
     public static Bitmap input;
 
@@ -41,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent intent = new Intent();
-//                Util.DogDye = false;
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
 
@@ -86,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 if (data != null) {
                     Uri selectedImageUri = data.getData();
-                    //String selectedImagePath = getPath(selectedImageUri);
                     InputStream iStream = null;
                     try {
                         iStream = getContentResolver().openInputStream(selectedImageUri);
@@ -103,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     Class activityClass = BaseImageProcessingActivity.class;
                     switch(checkedRadioButton.getId()){
                         case R.id.radioScale:
+                            activityClass = ScaleImageProcessingActivity.class;
                             break;
                         case R.id.radioRotate:
                             activityClass = RotateImageProcessingActivity.class;
