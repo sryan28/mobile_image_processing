@@ -17,8 +17,8 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         times = new long[3];
         Bitmap bitmap = MainActivity.bitmap;
         int [][] seqRes;
-        seqRes = processImageSequentialTimed(arrayFromBitmap(bitmap));
-//        processImagePipesTimed(arrayFromBitmap(bitmap));
+//        seqRes = processImageSequentialTimed(arrayFromBitmap(bitmap));
+        seqRes = processImagePipesTimed(arrayFromBitmap(bitmap));
 //     seqRes =  processImageThreadsTimed(arrayFromBitmap(bitmap));
         Bitmap bitmapOutput = bitmapFromArray(seqRes);
 
