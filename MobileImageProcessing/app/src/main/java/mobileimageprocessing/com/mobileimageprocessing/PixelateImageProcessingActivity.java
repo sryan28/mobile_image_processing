@@ -123,13 +123,9 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
             }
         }
     }
-//
-//    @Override
-//    public int[][] processImagePipes(int[][] image) {
-//        return processImageLooper(image);
-//    }
-
-    public int[][] processImageLooper(int[][] image) {
+    
+    @Override
+    public int[][] processImageLooper(int[][] image, int threadCount) {
         int threadCounter = 0;
         LooperThread[] threads = new LooperThread[THREAD_COUNT];
         for (int i = 0; i < THREAD_COUNT; i++) {
@@ -143,6 +139,7 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
             threads[i].waitForLooper();
         }
         for (int i = 0; i < image.length; i += X_BOX) {
+//            System.out.println(i);
             int xBound = i + X_BOX > image.length ? image.length : i + X_BOX;
             for (int j = 0; j < image[i].length; j += Y_BOX) {
                 int yBound = j + Y_BOX > image[0].length ? image[0].length : j + Y_BOX;

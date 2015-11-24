@@ -2,7 +2,6 @@ package mobileimageprocessing.com.mobileimageprocessing;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
@@ -19,12 +18,12 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         int[][] image = arrayFromBitmap(bitmap);
         int[][] seqRes = processImageSequentialTimed(cloneInt2dArray(image));
         int[][] threadRes = processImageThreadsTimed(cloneInt2dArray(image));
-        int[][] pipedRes = processImagePipesTimed(cloneInt2dArray(image));
-        Bitmap bitmapOutput = bitmapFromArray(pipedRes);
+        int[][] looperRes = processImageLooperTimed(cloneInt2dArray(image));
+        Bitmap bitmapOutput = bitmapFromArray(looperRes);
         Intent output = new Intent();
         MainActivity.input = bitmapOutput;
         setResult(RESULT_OK, output);
-        String toastMsg = String.format("Sequential: %d\nThreads: %d\nPipes: %d", times[0], times[1], times[2]);
+        String toastMsg = String.format("Sequential: %d\nThreads: %d\nLooper: %d", times[0], times[1], times[2]);
         System.out.println(toastMsg);
         Toast toast = Toast.makeText(this.getApplicationContext(), toastMsg, Toast.LENGTH_LONG);
         toast.show();
@@ -68,16 +67,16 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         return image;
     }
 
-    private int[][] processImagePipesTimed(int[][] image) {
+    private int[][] processImageLooperTimed(int[][] image) {
         long startTime = System.currentTimeMillis();
-        int[][] out = processImagePipes(image, THREAD_COUNT);
+        int[][] out = processImageLooper(image, THREAD_COUNT);
         long endTime = System.currentTimeMillis();
         times[2] = endTime - startTime;
         return out;
 
     }
 
-    public int[][] processImagePipes(int[][] image, int threads) {
+    public int[][] processImageLooper(int[][] image, int threads) {
         for (int j = 0; j < image.length / 2; j++) {
             for (int i = 0; i < image[0].length; i++) {
                 image[j][i] = 0;

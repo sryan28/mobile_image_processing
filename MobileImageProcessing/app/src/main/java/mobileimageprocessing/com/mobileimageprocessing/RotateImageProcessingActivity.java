@@ -16,9 +16,9 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
 
     @Override
     public int[][] processImageSequential(int[][] image) {
-        return rotateImageCounterClockWise(image, image[0].length, image.length, 0, 1);
+        return rotateImageOneEighty(image, image[0].length, image.length, 0, 1);
     }
-//
+
     @Override
     public int[][] processImageThreads(int[][] image, int threadCount) {
         Callable<int[][]> callable;
@@ -48,68 +48,48 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
         return newImage;
     }
 
-    @Override
-    public int[][] processImagePipes(int[][] image, int threadCount) {
-        Thread[] threads = new Thread[threadCount];
-        int[][] newImage = new int[image.length][image[0].length];
 
-        for (int i = 0; i < threadCount; i++) {
-            threads[i] = new Thread(new RotateRunnable(image, image[0].length, image.length, i, threadCount, newImage));
-            threads[i].start();
-        }
-
-        for (int i = 0; i < threadCount; i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return newImage;
-    }
-
-
-    public static int[][] rotateImageOneEighty(int[][] image, int height, int width, int start, int threadCount){
-        int newWidth = width/threadCount;
-        int startColumn = start*newWidth;
+    public static int[][] rotateImageOneEighty(int[][] image, int height, int width, int start, int threadCount) {
+        int newWidth = width / threadCount;
+        int startColumn = start * newWidth;
 
         int[][] newImage = new int[newWidth][height];
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < newWidth; j++) {
-                newImage[j][i] = image[width-1-j-startColumn][height-1-i];
+                newImage[j][i] = image[width - 1 - j - startColumn][height - 1 - i];
             }
         }
 
         return newImage;
     }
 
-    public static int[][] rotateImageClockWise(int[][] image, int height, int width, int start, int threadCount){
+    public static int[][] rotateImageClockWise(int[][] image, int height, int width, int start, int threadCount) {
         int newHeight = width;
-        int newWidth = height/threadCount;
-        int startColumn = start*newWidth;
+        int newWidth = height / threadCount;
+        int startColumn = start * newWidth;
 
         int[][] newImage = new int[newWidth][newHeight];
 
         for (int i = 0; i < newHeight; i++) {
             for (int j = 0; j < newWidth; j++) {
-                newImage[j][i] = image[i][-startColumn+height-1-j];
+                newImage[j][i] = image[i][-startColumn + height - 1 - j];
             }
         }
 
         return newImage;
     }
 
-    public static int[][] rotateImageCounterClockWise(int[][] image, int height, int width, int start, int threadCount){
+    public static int[][] rotateImageCounterClockWise(int[][] image, int height, int width, int start, int threadCount) {
         int newHeight = width;
-        int newWidth = height/threadCount;
-        int startColumn = start*newWidth;
+        int newWidth = height / threadCount;
+        int startColumn = start * newWidth;
 
         int[][] newImage = new int[newWidth][newHeight];
 
         for (int i = 0; i < newHeight; i++) {
             for (int j = 0; j < newWidth; j++) {
-                newImage[j][i] = image[width-1-i][startColumn+j];
+                newImage[j][i] = image[width - 1 - i][startColumn + j];
             }
         }
 
@@ -157,36 +137,63 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
         @Override
         public void run() {
             System.arraycopy(RotateImageProcessingActivity.rotateImageOneEighty(image, height, width, start, threadCount), 0, newImage, start * (image.length / threadCount), (image.length / threadCount));
-
-//             newImage = RotateImageProcessingActivity.rotateImageOneEighty(image, height, width, start, threadCount);
         }
     }
 
 
+//    @Override
+//    public int[][] processImagePipes(int[][] image, int threadCount) {
+//        Thread[] threads = new Thread[threadCount];
+//        int[][] newImage = new int[image.length][image[0].length];
+//
+//        for (int i = 0; i < threadCount; i++) {
+//            threads[i] = new Thread(new RotateRunnable(image, image[0].length, image.length, i, threadCount, newImage));
+//            threads[i].start();
+//        }
+//
+//        for (int i = 0; i < threadCount; i++) {
+//            try {
+//                threads[i].join();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return newImage;
+//    }
 
-    public int[][] processImageLooper(int[][] image) {
+    @Override
+    public int[][] processImageLooper(int[][] image, int threadCount) {
         int threadCounter = 0;
         LooperThread[] threads = new LooperThread[THREAD_COUNT];
+
+        int[][] newImage = new int[image.length][image[0].length];
+        int height = image[0].length;
+        int width = image.length;
+        int newWidth = image.length/THREAD_COUNT;
+
         for (int i = 0; i < THREAD_COUNT; i++) {
             threads[i] = new LooperThread();
             threads[i].start();
         }
-        //return image;
 
         for (int i = 0; i < THREAD_COUNT; i++) {
             // Ensure the mHandler is existing or we get NPEs
             threads[i].waitForLooper();
         }
 
-//        for (int i = 0; i < image.length; i += X_BOX) {
-//            int xBound = i + X_BOX > image.length ? image.length : i + X_BOX;
-//            for (int j = 0; j < image[i].length; j += Y_BOX) {
-//                int yBound = j + Y_BOX > image[0].length ? image[0].length : j + Y_BOX;
-//                threads[threadCounter].addJob(new PixelateLooperRunnable(image, i, xBound, j, yBound));
+//        for (int i = 0; i < height; i++) {
+//            for (int j = 0; j < width; j++) {
+//                threads[threadCounter].addJob(new RotateLooperRunnable(image, i,j, height, width, newImage));
 //                threadCounter++;
 //                threadCounter %= THREAD_COUNT;
 //            }
 //        }
+
+        for (int i = 0; i < height; i++) {
+            threads[threadCounter].addJob(new RotateLooperRunnable(image, i, height, width, newImage));
+            threadCounter++;
+            threadCounter %= THREAD_COUNT;
+        }
 
         for (int i = 0; i < THREAD_COUNT; i++) {
             threads[i].exitLooperSafely();
@@ -200,16 +207,36 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
             }
         }
         System.out.println("Done!");
-        return image;
-
+        return newImage;
     }
+
+    private class RotateLooperRunnable implements Runnable {
+
+        int[][] image;
+        int width;
+        int height;
+        int[][] newImage;
+        int i;
+
+        public RotateLooperRunnable(int[][] image, int i, int height, int width, int[][] newImage) {
+            this.image = image;
+            this.newImage = newImage;
+            this.i = i;
+            this.width = width;
+            this.height = height;
+        }
+
+        @Override
+        public void run() {
+            for (int j = 0; j < width; j++) {
+                newImage[j][i] = image[width-1-j][height-1-i];
+            }
+        }
+    }
+
 
     private class LooperThread extends Thread {
         public Handler mHandler;
-
-        public LooperThread() {
-
-        }
 
         @Override
         public void run() {
@@ -245,44 +272,4 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
         }
     }
 
-    private class PixelateLooperRunnable implements Runnable {
-
-        int[][] image;
-        int xStart;
-        int xEnd;
-        int yStart;
-        int yEnd;
-
-        PixelateLooperRunnable(int[][] image, int xStart, int xEnd, int yStart, int yEnd) {
-            this.image = image;
-            this.xStart = xStart;
-            this.xEnd = xEnd;
-            this.yStart = yStart;
-            this.yEnd = yEnd;
-        }
-
-        @Override
-        public void run() {
-            int redSum = 0;
-            int greenSum = 0;
-            int blueSum = 0;
-            int counter = 0;
-            for (int x = xStart; x < xEnd; x++) {
-                for (int y = yStart; y < yEnd; y++) {
-                    redSum += Color.red(image[x][y]);
-                    greenSum += Color.green(image[x][y]);
-                    blueSum += Color.blue(image[x][y]);
-                    counter++;
-                }
-            }
-            redSum /= counter;
-            greenSum /= counter;
-            blueSum /= counter;
-            for (int x = xStart; x < xEnd; x++) {
-                for (int y = yStart; y < yEnd; y++) {
-                    image[x][y] = Color.argb(255, redSum, greenSum, blueSum);
-                }
-            }
-        }
-    }
 }
