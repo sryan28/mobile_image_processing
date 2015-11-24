@@ -8,10 +8,15 @@ import android.widget.Toast;
 
 public class BaseImageProcessingActivity extends AppCompatActivity {
     private long[] times;
-    public static final int THREAD_COUNT = 2;
+    public static int THREAD_COUNT;
+    public static int angle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent = getIntent();
+        THREAD_COUNT = intent.getIntExtra("threads", 2);
+        angle = intent.getIntExtra("rotateBy", 90);
+
         super.onCreate(savedInstanceState);
         times = new long[3];
         Bitmap bitmap = MainActivity.bitmap;

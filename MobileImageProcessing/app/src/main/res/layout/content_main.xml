@@ -16,41 +16,20 @@
         android:id="@+id/btnGallery"
         android:layout_alignParentStart="true" />
 
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="numberSigned"
-        android:ems="10"
-        android:id="@+id/numThreads"
-        android:layout_below="@+id/radioGroup"
-        android:layout_centerHorizontal="true" />
-
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
-        android:layout_below="@+id/numThreads" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView2"
-        android:layout_below="@+id/imageView" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView3"
-        android:layout_below="@+id/imageView2" />
+        android:layout_below="@+id/rotateGroup" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@id/btnGallery">
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_below="@id/btnGallery">
 
         <RadioButton
             android:layout_width="wrap_content"
@@ -77,5 +56,93 @@
             android:layout_alignTop="@+id/btnGallery"
             android:layout_alignEnd="@+id/imageView" />
     </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/threadGroup"
+        android:layout_below="@+id/radioGroup">
+
+        <TextView android:text="Threads" android:layout_width="65dp"
+            android:layout_height="22dp"
+            android:textSize="16sp"
+            android:id="@+id/threads"/>
+
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/radioGroupThreads">
+
+            <RadioButton android:id="@+id/two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="2"
+                />
+            <RadioButton android:id="@+id/four"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4"
+                />
+            <RadioButton android:id="@+id/eight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8"
+                />
+            <RadioButton android:id="@+id/sixteen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="16"
+                />
+            <RadioButton android:id="@+id/thirtytwo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="32"
+                />
+
+        </RadioGroup>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/rotateGroup"
+        android:layout_below="@+id/threadGroup">
+
+        <TextView android:text="Rotate by:" android:layout_width="65dp"
+            android:layout_height="22dp"
+            android:textSize="16sp"
+            android:id="@+id/rotateDegree"/>
+
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/radioGroupRotate">
+
+            <RadioButton android:id="@+id/clockwise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="90"
+                />
+            <RadioButton android:id="@+id/oneeighty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="180"
+                />
+            <RadioButton android:id="@+id/counterclockwise"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="270"
+                />
+        </RadioGroup>
+    </LinearLayout>
 
 </RelativeLayout>

@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         imageDisplay = ((ImageView) findViewById(R.id.imageView));
-//        threadsCount = (EditText)findViewById(R.id.numThreads);
-
     }
 
     @Override
@@ -97,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
                     RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroup);
                     RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
                     Class activityClass = BaseImageProcessingActivity.class;
+                    int threadsCount = 1;
+                    int angle = 90;
                     switch(checkedRadioButton.getId()){
                         case R.id.radioScale:
                             activityClass = ScaleImageProcessingActivity.class;
@@ -109,9 +109,47 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         default:
                     }
+
+                    RadioGroup rGroupThreads = (RadioGroup)findViewById(R.id.radioGroupThreads);
+                    RadioButton checkedRadioButtonThread = (RadioButton)rGroupThreads.findViewById(rGroupThreads.getCheckedRadioButtonId());
+                    switch(checkedRadioButtonThread.getId()){
+                        case R.id.two:
+                            threadsCount = 2;
+                            break;
+                        case R.id.four:
+                            threadsCount = 4;
+                            break;
+                        case R.id.eight:
+                            threadsCount = 8;
+                            break;
+                        case R.id.sixteen:
+                            threadsCount = 16;
+                            break;
+                        case R.id.thirtytwo:
+                            threadsCount = 32;
+                            break;
+                        default:
+                    }
+
+                    RadioGroup rGroupRotate = (RadioGroup)findViewById(R.id.radioGroupRotate);
+                    RadioButton checkedRadioButtonRotate = (RadioButton)rGroupRotate.findViewById(rGroupRotate.getCheckedRadioButtonId());
+                    switch(checkedRadioButtonRotate.getId()){
+                        case R.id.clockwise:
+                            angle = 90;
+                            break;
+                        case R.id.oneeighty:
+                            angle = 180;
+                            break;
+                        case R.id.counterclockwise:
+                            angle = 270;
+                            break;
+                        default:
+                    }
+
                     System.out.println("Starting : "+activityClass.getName());
                     Intent processIntent = new Intent(this.getApplicationContext(), activityClass);
-//                    processIntent.putExtra("threadsCount", Integer.parseInt(threadsCount.getText().toString()));
+                    processIntent.putExtra("threads", threadsCount);
+                    processIntent.putExtra("rotateBy", angle);
                     startActivityForResult(processIntent,2);
                 }
                 break;
