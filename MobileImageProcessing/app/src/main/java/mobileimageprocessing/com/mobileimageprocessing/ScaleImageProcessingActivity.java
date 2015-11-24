@@ -2,14 +2,17 @@ package mobileimageprocessing.com.mobileimageprocessing;
 
 import android.graphics.Color;
 
-/**
- * Created by user on 11/21/2015.
- */
 public class ScaleImageProcessingActivity extends BaseImageProcessingActivity{
 
     @Override
     public int[][] processImageSequential(int[][] image ) {
         return resize(image, (int) Math.floor(image.length * 0.5), (int) Math.floor(image[0].length * 0.5));
+    }
+
+   @Override
+    public int[][] processImageThreads(int[][] image) {
+        //4 threads
+        return resizeThreads(image, (int) Math.floor(image.length * 0.5), (int) Math.floor(image[0].length * 0.5), 4);
     }
 
     public int [][] resize(int [][] image, int w, int h) {
@@ -21,7 +24,7 @@ public class ScaleImageProcessingActivity extends BaseImageProcessingActivity{
 
         int [][] result = new int[w][h];
 
-        double rf = 0, cf = 0;
+        double rf, cf;
         for(int i = 0; i < w; i ++) {
             for(int j = 0; j < h; j++) {
                 rf = i * sr;
@@ -38,17 +41,17 @@ public class ScaleImageProcessingActivity extends BaseImageProcessingActivity{
                 int blue = 0;
 
                 red = Color.red(image[r][c]) * (1 - deltar) * (1 - deltac)
-                        + Color.red(image[r + 1][c] * deltar * (1 - deltac))
+                        + Color.red(image[r + 1][c]) * deltar * (1 - deltac)
                         + Color.red(image[r][c + 1]) * (1 - deltar) * deltac
                         + Color.red(image[r + 1][c + 1]) * deltac * deltar;
 
                 green = Color.green(image[r][c]) * (1 - deltar) * (1 - deltac)
-                        + Color.green(image[r + 1][c] * deltar * (1 - deltac))
+                        + Color.green(image[r + 1][c]) * deltar * (1 - deltac)
                         + Color.green(image[r][c + 1]) * (1 - deltar) * deltac
                         + Color.green(image[r + 1][c + 1]) * deltac * deltar;
 
                 blue = Color.blue(image[r][c]) * (1 - deltar) * (1 - deltac)
-                        + Color.blue(image[r + 1][c] * deltar * (1 - deltac))
+                        + Color.blue(image[r + 1][c]) * deltar * (1 - deltac)
                         + Color.blue(image[r][c + 1]) * (1 - deltar) * deltac
                         + Color.blue(image[r + 1][c + 1]) * deltac * deltar;
 
@@ -60,14 +63,26 @@ public class ScaleImageProcessingActivity extends BaseImageProcessingActivity{
     }
 
     public int [][] resizeThreads(int [][] image, int w, int h, int threadCount) {
+        int[][] result = new int[w][h];
+        System.out.println(result.length);
+        System.out.println(result[0].length);
         Thread[] threads = new Thread[threadCount];
         int sr = image.length / w;
         int sc = image[0].length / h;
 
-        int fragsPerThread = image.length / threadCount;
+        int fragsPerThread = result.length / threadCount;
+
+        int prevEnd = 0;
 
         for(int i = 0; i < threadCount; i++) {
-            threads[i] = new Thread(new ScalingRunnable(image, start, end, 0, image[0].length, sr, sc));
+            int start = prevEnd;
+            int end = start +  fragsPerThread;
+
+            if(i == threadCount - 1) {
+                end = result.length;
+            }
+            prevEnd = end;
+            threads[i] = new Thread(new ScalingRunnable(image, start, end, sr, sc, result));
             threads[i].start();
         }
 
@@ -78,7 +93,7 @@ public class ScaleImageProcessingActivity extends BaseImageProcessingActivity{
                 e.printStackTrace();
             }
         }
-        return image;
+        return result;
     }
 
     private class ScalingRunnable implements Runnable {
@@ -89,22 +104,24 @@ public class ScaleImageProcessingActivity extends BaseImageProcessingActivity{
         int yEnd;
         int sr;
         int sc;
+        int [][] result;
 
-        ScalingRunnable(int [][] image, int xStart, int xEnd, int yStart, int yEnd, int sr, int sc) {
+        ScalingRunnable(int [][] image, int xStart, int xEnd, int sr, int sc, int[][] result) {
             this.image = image;
             this.xStart = xStart;
             this.xEnd = xEnd;
-            this.yStart = yStart;
-            this.yEnd = yEnd;
+//            this.yStart = yStart;
+//            this.yEnd = yEnd;
             this.sr = sr;
             this.sc = sc;
+            this.result = result;
         }
 
         @Override
         public void run() {
             double rf = 0, cf = 0;
-            for(int i = xStart; i < xEnd; i ++) {
-                for (int j = yStart; j < yEnd; j++) {
+            for(int i = xStart; i < xEnd; i++) {
+                for (int j = 0; j < result[0].length; j++) {
                     rf = i * sr;
                     cf = j * sc;
 
@@ -119,24 +136,23 @@ public class ScaleImageProcessingActivity extends BaseImageProcessingActivity{
                     int blue = 0;
 
                     red = Color.red(image[r][c]) * (1 - deltar) * (1 - deltac)
-                            + Color.red(image[r + 1][c] * deltar * (1 - deltac))
+                            + Color.red(image[r + 1][c]) * deltar * (1 - deltac)
                             + Color.red(image[r][c + 1]) * (1 - deltar) * deltac
                             + Color.red(image[r + 1][c + 1]) * deltac * deltar;
 
                     green = Color.green(image[r][c]) * (1 - deltar) * (1 - deltac)
-                            + Color.green(image[r + 1][c] * deltar * (1 - deltac))
+                            + Color.green(image[r + 1][c]) * deltar * (1 - deltac)
                             + Color.green(image[r][c + 1]) * (1 - deltar) * deltac
                             + Color.green(image[r + 1][c + 1]) * deltac * deltar;
 
                     blue = Color.blue(image[r][c]) * (1 - deltar) * (1 - deltac)
-                            + Color.blue(image[r + 1][c] * deltar * (1 - deltac))
+                            + Color.blue(image[r + 1][c]) * deltar * (1 - deltac)
                             + Color.blue(image[r][c + 1]) * (1 - deltar) * deltac
                             + Color.blue(image[r + 1][c + 1]) * deltac * deltar;
 
-                    image[i][j] = Color.rgb(red, green, blue);
+                    result[i][j] = Color.rgb(red, green, blue);
                 }
             }
         }
     }
 }
-

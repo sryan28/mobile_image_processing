@@ -16,9 +16,10 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         times = new long[3];
         Bitmap bitmap = MainActivity.bitmap;
-        int[][] seqRes = processImageSequentialTimed(arrayFromBitmap(bitmap));
+        int [][] seqRes;
+        seqRes = processImageSequentialTimed(arrayFromBitmap(bitmap));
 //        processImagePipesTimed(arrayFromBitmap(bitmap));
-//        processImageThreadsTimed(arrayFromBitmap(bitmap));
+//     seqRes =  processImageThreadsTimed(arrayFromBitmap(bitmap));
         Bitmap bitmapOutput = bitmapFromArray(seqRes);
 
         Intent output = new Intent();
