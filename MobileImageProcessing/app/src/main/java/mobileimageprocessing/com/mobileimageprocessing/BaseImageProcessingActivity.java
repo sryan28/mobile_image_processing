@@ -2,13 +2,14 @@ package mobileimageprocessing.com.mobileimageprocessing;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 public class BaseImageProcessingActivity extends AppCompatActivity {
     private long[] times;
-    public static final int THREAD_COUNT = 6;
+    public static final int THREAD_COUNT = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,9 +18,9 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         Bitmap bitmap = MainActivity.bitmap;
         int[][] image = arrayFromBitmap(bitmap);
         int[][] seqRes = processImageSequentialTimed(cloneInt2dArray(image));
-        processImageThreadsTimed(cloneInt2dArray(image));
-        processImagePipesTimed(cloneInt2dArray(image));
-        Bitmap bitmapOutput = bitmapFromArray(seqRes);
+        int[][] threadRes = processImageThreadsTimed(cloneInt2dArray(image));
+        int[][] pipedRes = processImagePipesTimed(cloneInt2dArray(image));
+        Bitmap bitmapOutput = bitmapFromArray(pipedRes);
         Intent output = new Intent();
         MainActivity.input = bitmapOutput;
         setResult(RESULT_OK, output);
@@ -69,14 +70,14 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
 
     private int[][] processImagePipesTimed(int[][] image) {
         long startTime = System.currentTimeMillis();
-        int[][] out = processImagePipes(image);
+        int[][] out = processImagePipes(image, THREAD_COUNT);
         long endTime = System.currentTimeMillis();
         times[2] = endTime - startTime;
         return out;
 
     }
 
-    public int[][] processImagePipes(int[][] image) {
+    public int[][] processImagePipes(int[][] image, int threads) {
         for (int j = 0; j < image.length / 2; j++) {
             for (int i = 0; i < image[0].length; i++) {
                 image[j][i] = 0;

@@ -123,11 +123,11 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
             }
         }
     }
-
-    @Override
-    public int[][] processImagePipes(int[][] image) {
-        return processImageLooper(image);
-    }
+//
+//    @Override
+//    public int[][] processImagePipes(int[][] image) {
+//        return processImageLooper(image);
+//    }
 
     public int[][] processImageLooper(int[][] image) {
         int threadCounter = 0;

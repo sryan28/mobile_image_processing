@@ -1,5 +1,9 @@
 package mobileimageprocessing.com.mobileimageprocessing;
 
+import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -14,14 +18,15 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
     public int[][] processImageSequential(int[][] image) {
         return rotateImageCounterClockWise(image, image[0].length, image.length, 0, 1);
     }
-
+//
     @Override
     public int[][] processImageThreads(int[][] image, int threadCount) {
         Callable<int[][]> callable;
+
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+
         List<Callable<int[][]>> tasks = new ArrayList<Callable<int[][]>>();
         List<Future<int[][]>> list;
-
         int[][] newImage = new int[image.length][image[0].length];
 
         for (int i = 0; i < threadCount; i++) {
@@ -42,6 +47,27 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
         }
         return newImage;
     }
+
+    @Override
+    public int[][] processImagePipes(int[][] image, int threadCount) {
+        Thread[] threads = new Thread[threadCount];
+        int[][] newImage = new int[image.length][image[0].length];
+
+        for (int i = 0; i < threadCount; i++) {
+            threads[i] = new Thread(new RotateRunnable(image, image[0].length, image.length, i, threadCount, newImage));
+            threads[i].start();
+        }
+
+        for (int i = 0; i < threadCount; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return newImage;
+    }
+
 
     public static int[][] rotateImageOneEighty(int[][] image, int height, int width, int start, int threadCount){
         int newWidth = width/threadCount;
@@ -108,6 +134,155 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
         @Override
         public int[][] call() throws Exception {
             return RotateImageProcessingActivity.rotateImageOneEighty(image, height, width, start, threadCount);
+        }
+    }
+
+    private class RotateRunnable implements Runnable {
+        int[][] image;
+        int start;
+        int width;
+        int height;
+        int threadCount;
+        int[][] newImage;
+
+        public RotateRunnable(int[][] image, int height, int width, int start, int threadCount, int[][] newImage) {
+            this.image = image;
+            this.width = width;
+            this.height = height;
+            this.start = start;
+            this.threadCount = threadCount;
+            this.newImage = newImage;
+        }
+
+        @Override
+        public void run() {
+            System.arraycopy(RotateImageProcessingActivity.rotateImageOneEighty(image, height, width, start, threadCount), 0, newImage, start * (image.length / threadCount), (image.length / threadCount));
+
+//             newImage = RotateImageProcessingActivity.rotateImageOneEighty(image, height, width, start, threadCount);
+        }
+    }
+
+
+
+    public int[][] processImageLooper(int[][] image) {
+        int threadCounter = 0;
+        LooperThread[] threads = new LooperThread[THREAD_COUNT];
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            threads[i] = new LooperThread();
+            threads[i].start();
+        }
+        //return image;
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            // Ensure the mHandler is existing or we get NPEs
+            threads[i].waitForLooper();
+        }
+
+//        for (int i = 0; i < image.length; i += X_BOX) {
+//            int xBound = i + X_BOX > image.length ? image.length : i + X_BOX;
+//            for (int j = 0; j < image[i].length; j += Y_BOX) {
+//                int yBound = j + Y_BOX > image[0].length ? image[0].length : j + Y_BOX;
+//                threads[threadCounter].addJob(new PixelateLooperRunnable(image, i, xBound, j, yBound));
+//                threadCounter++;
+//                threadCounter %= THREAD_COUNT;
+//            }
+//        }
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            threads[i].exitLooperSafely();
+        }
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Done!");
+        return image;
+
+    }
+
+    private class LooperThread extends Thread {
+        public Handler mHandler;
+
+        public LooperThread() {
+
+        }
+
+        @Override
+        public void run() {
+            Looper.prepare();
+            synchronized (this) {
+                mHandler = new Handler();
+                System.out.println("Handler created");
+                notifyAll();
+            }
+
+            Looper.loop();
+        }
+
+        public void addJob(Runnable r) {
+            this.mHandler.post(r);
+        }
+
+        public void exitLooperSafely() {
+            this.mHandler.getLooper().quitSafely();
+        }
+
+        public void waitForLooper() {
+            synchronized (this) {
+                while (mHandler == null) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }
+    }
+
+    private class PixelateLooperRunnable implements Runnable {
+
+        int[][] image;
+        int xStart;
+        int xEnd;
+        int yStart;
+        int yEnd;
+
+        PixelateLooperRunnable(int[][] image, int xStart, int xEnd, int yStart, int yEnd) {
+            this.image = image;
+            this.xStart = xStart;
+            this.xEnd = xEnd;
+            this.yStart = yStart;
+            this.yEnd = yEnd;
+        }
+
+        @Override
+        public void run() {
+            int redSum = 0;
+            int greenSum = 0;
+            int blueSum = 0;
+            int counter = 0;
+            for (int x = xStart; x < xEnd; x++) {
+                for (int y = yStart; y < yEnd; y++) {
+                    redSum += Color.red(image[x][y]);
+                    greenSum += Color.green(image[x][y]);
+                    blueSum += Color.blue(image[x][y]);
+                    counter++;
+                }
+            }
+            redSum /= counter;
+            greenSum /= counter;
+            blueSum /= counter;
+            for (int x = xStart; x < xEnd; x++) {
+                for (int y = yStart; y < yEnd; y++) {
+                    image[x][y] = Color.argb(255, redSum, greenSum, blueSum);
+                }
+            }
         }
     }
 }
