@@ -40,6 +40,11 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".ScaleImageProcessingActivity"
+            android:label="BaseImageProcessing"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>
