@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -25,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageDisplay;
 
     public static Bitmap bitmap;
-    public static Bitmap input;
+    public static Bitmap input = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
             case 2:
                 if(data!=null){
                     imageDisplay.setImageBitmap(input);
+                    bitmap.recycle();
                 }
         }
 

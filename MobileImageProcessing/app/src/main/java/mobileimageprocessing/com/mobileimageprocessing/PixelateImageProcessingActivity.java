@@ -14,13 +14,16 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
 
     @Override
     public int[][] processImageSequential(int[][] image) {
-        for (int i = 0; i < image.length; i += X_BOX) {
-            int xBound = i + X_BOX > image.length ? image.length : i + X_BOX;
-            for (int j = 0; j < image[i].length; j += Y_BOX) {
+        int img_height = image.length;
+        int img_width = image[0].length;
+        for (int i = 0; i < img_height; i += X_BOX) {
+            int xBound = i + X_BOX > img_height ? img_height : i + X_BOX;
+            for (int j = 0; j < img_width; j += Y_BOX) {
                 int redSum = 0;
                 int greenSum = 0;
                 int blueSum = 0;
-                int yBound = j + Y_BOX > image[0].length ? image[0].length : j + Y_BOX;
+                int yBoxSum = Y_BOX + j;
+                int yBound = yBoxSum > img_width? img_width : yBoxSum;
                 int counter = 0;
                 for (int x = i; x < xBound; x++) {
                     for (int y = j; y < yBound; y++) {
@@ -53,6 +56,7 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
         // Extra chunks to give out to the first n threads
         int extraChunks = chunks % threadCount;
         int previousEnd = 0;
+        int img_width = image[0].length;
         for (int i = 0; i < threadCount; i++) {
             int start = previousEnd;
             int end = start + chunksPerThread * X_BOX;
@@ -64,7 +68,7 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
                 end = image.length;
             }
             previousEnd = end;
-            threads[i] = new Thread(new PixelateRunnable(image, start, end, 0, image[0].length));
+            threads[i] = new Thread(new PixelateRunnable(image, start, end, 0, img_width));
             threads[i].start();
         }
         for (int i = 0; i < threadCount; i++) {
@@ -123,7 +127,7 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
             }
         }
     }
-    
+
     @Override
     public int[][] processImageLooper(int[][] image, int threadCount) {
         int threadCounter = 0;
@@ -132,14 +136,11 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
             threads[i] = new LooperThread();
             threads[i].start();
         }
-        //return image;
-
         for (int i = 0; i < THREAD_COUNT; i++) {
             // Ensure the mHandler is existing or we get NPEs
             threads[i].waitForLooper();
         }
         for (int i = 0; i < image.length; i += X_BOX) {
-//            System.out.println(i);
             int xBound = i + X_BOX > image.length ? image.length : i + X_BOX;
             for (int j = 0; j < image[i].length; j += Y_BOX) {
                 int yBound = j + Y_BOX > image[0].length ? image[0].length : j + Y_BOX;
@@ -167,16 +168,11 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
     private class LooperThread extends Thread {
         public Handler mHandler;
 
-        public LooperThread() {
-
-        }
-
         @Override
         public void run() {
             Looper.prepare();
             synchronized (this) {
                 mHandler = new Handler();
-                System.out.println("Handler created");
                 notifyAll();
             }
 

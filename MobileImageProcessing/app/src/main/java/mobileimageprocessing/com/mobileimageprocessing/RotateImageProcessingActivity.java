@@ -223,7 +223,6 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
             Looper.prepare();
             synchronized (this) {
                 mHandler = new Handler();
-                System.out.println("Handler created");
                 notifyAll();
             }
             Looper.loop();

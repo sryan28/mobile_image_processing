@@ -22,40 +22,54 @@
         android:id="@+id/imageView"
         android:layout_below="@+id/rotateGroup" />
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/methodLayout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:orientation="horizontal"
         android:gravity="center"
         android:layout_below="@id/btnGallery">
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pixelation"
-            android:id="@+id/radioPixelate"
-            android:layout_below="@+id/radioRotate"
-            android:layout_alignStart="@+id/radioRotate"
-            android:checked="true" />
+        <TextView
+            android:layout_width="65dp"
+            android:layout_height="22dp"
+            android:text="Method"
+            android:id="@+id/textView"
+            android:textSize="16sp" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rotate"
-            android:id="@+id/radioRotate"
-            android:layout_below="@+id/radioScale"
-            android:layout_alignStart="@+id/radioScale" />
+        <RadioGroup
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:id="@+id/radioGroup">
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Scale"
-            android:id="@+id/radioScale"
-            android:layout_alignTop="@+id/btnGallery"
-            android:layout_alignEnd="@+id/imageView" />
-    </RadioGroup>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pixelation"
+                android:id="@+id/radioPixelate"
+                android:layout_below="@+id/radioRotate"
+                android:layout_alignStart="@+id/radioRotate"
+                android:checked="true" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rotate"
+                android:id="@+id/radioRotate"
+                android:layout_below="@+id/radioScale"
+                android:layout_alignStart="@+id/radioScale" />
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scale"
+                android:id="@+id/radioScale"
+                android:layout_alignTop="@+id/btnGallery"
+                android:layout_alignEnd="@+id/imageView" />
+        </RadioGroup>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,7 +77,7 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:id="@+id/threadGroup"
-        android:layout_below="@+id/radioGroup">
+        android:layout_below="@+id/methodLayout">
 
         <TextView android:text="Threads" android:layout_width="65dp"
             android:layout_height="22dp"
@@ -104,6 +118,7 @@
                 />
 
         </RadioGroup>
+
     </LinearLayout>
 
 
