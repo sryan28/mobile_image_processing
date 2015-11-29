@@ -10,23 +10,46 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
     private long[] times;
     public static int THREAD_COUNT;
     public static int angle;
-
+    private final int TEST_ITERATIONS = 100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();
         THREAD_COUNT = intent.getIntExtra("threads", 2);
         angle = intent.getIntExtra("rotateBy", 90);
-
+        boolean runHundredTimes = intent.getBooleanExtra("runHundredTimes", false);
         super.onCreate(savedInstanceState);
-        times = new long[3];
-        Bitmap bitmap = MainActivity.bitmap;
-        int[][] image = arrayFromBitmap(bitmap);
-        int[][] seqRes = processImageSequentialTimed(cloneInt2dArray(image));
-        int[][] threadRes = processImageThreadsTimed(cloneInt2dArray(image));
-        int[][] looperRes = processImageLooperTimed(cloneInt2dArray(image));
-        Bitmap bitmapOutput = bitmapFromArray(looperRes);
+        if (runHundredTimes) {
+            System.out.println("Running 100 times !");
+            long[] totalTimes = new long[3];
+            Bitmap bitmap = MainActivity.bitmap;
+            int[][] image = arrayFromBitmap(bitmap);
+            times = new long[3];
+            for (int i = 0; i < TEST_ITERATIONS; i++) {
+                // Run the tests, add to results
+                processImageSequentialTimed(cloneInt2dArray(image));
+                processImageThreadsTimed(cloneInt2dArray(image));
+                processImageLooperTimed(cloneInt2dArray(image));
+                for(int j=0;j<3;j++){
+                    totalTimes[j]+=times[j];
+                }
+            }
+            for(int j=0;j<3;j++){
+                totalTimes[j]/=TEST_ITERATIONS;
+                times[j] = totalTimes[j];
+            }
+        } else {
+            times = new long[3];
+            Bitmap bitmap = MainActivity.bitmap;
+            int[][] image = arrayFromBitmap(bitmap);
+            int[][] seqRes = processImageSequentialTimed(cloneInt2dArray(image));
+            int[][] threadRes = processImageThreadsTimed(cloneInt2dArray(image));
+            int[][] looperRes = processImageLooperTimed(cloneInt2dArray(image));
+            Bitmap bitmapOutput = bitmapFromArray(looperRes);
+            MainActivity.input = bitmapOutput;
+
+        }
+
         Intent output = new Intent();
-        MainActivity.input = bitmapOutput;
         setResult(RESULT_OK, output);
         String toastMsg = String.format("Sequential: %d\nThreads: %d\nLooper: %d", times[0], times[1], times[2]);
         System.out.println(toastMsg);
@@ -90,15 +113,15 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
         return image;
     }
 
-    public static int[][] cloneInt2dArray(int[][] image){
+    public static int[][] cloneInt2dArray(int[][] image) {
         int[][] cloneCopy = new int[image.length][];
-        for(int i=0;i<image.length;i++){
+        for (int i = 0; i < image.length; i++) {
             cloneCopy[i] = new int[image[i].length];
-            for (int j=0;j<image[i].length;j++){
+            for (int j = 0; j < image[i].length; j++) {
                 cloneCopy[i][j] = image[i][j];
             }
         }
-        return  cloneCopy;
+        return cloneCopy;
     }
 
     public static Bitmap bitmapFromArray(int[][] pixels2d) {

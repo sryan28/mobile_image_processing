@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-         if (resultCode != RESULT_OK) return;
+        if (resultCode != RESULT_OK) return;
 
         switch (requestCode) {
 
@@ -91,12 +92,13 @@ public class MainActivity extends AppCompatActivity {
                     this.bitmap = BitmapFactory.decodeStream(iStream);
 
                     //This will get the radiobutton in the radiogroup that is checked
-                    RadioGroup rGroup = (RadioGroup)findViewById(R.id.radioGroup);
-                    RadioButton checkedRadioButton = (RadioButton)rGroup.findViewById(rGroup.getCheckedRadioButtonId());
+                    RadioGroup rGroup = (RadioGroup) findViewById(R.id.radioGroup);
+                    RadioButton checkedRadioButton = (RadioButton) rGroup.findViewById(rGroup.getCheckedRadioButtonId());
                     Class activityClass = BaseImageProcessingActivity.class;
                     int threadsCount = 1;
                     int angle = 90;
-                    switch(checkedRadioButton.getId()){
+                    boolean runHundredTimes = ((CheckBox) findViewById(R.id.checkBox)).isChecked();
+                    switch (checkedRadioButton.getId()) {
                         case R.id.radioScale:
                             activityClass = ScaleImageProcessingActivity.class;
                             break;
@@ -109,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
                         default:
                     }
 
-                    RadioGroup rGroupThreads = (RadioGroup)findViewById(R.id.radioGroupThreads);
-                    RadioButton checkedRadioButtonThread = (RadioButton)rGroupThreads.findViewById(rGroupThreads.getCheckedRadioButtonId());
-                    switch(checkedRadioButtonThread.getId()){
+                    RadioGroup rGroupThreads = (RadioGroup) findViewById(R.id.radioGroupThreads);
+                    RadioButton checkedRadioButtonThread = (RadioButton) rGroupThreads.findViewById(rGroupThreads.getCheckedRadioButtonId());
+                    switch (checkedRadioButtonThread.getId()) {
                         case R.id.two:
                             threadsCount = 2;
                             break;
@@ -130,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
                         default:
                     }
 
-                    RadioGroup rGroupRotate = (RadioGroup)findViewById(R.id.radioGroupRotate);
-                    RadioButton checkedRadioButtonRotate = (RadioButton)rGroupRotate.findViewById(rGroupRotate.getCheckedRadioButtonId());
-                    switch(checkedRadioButtonRotate.getId()){
+                    RadioGroup rGroupRotate = (RadioGroup) findViewById(R.id.radioGroupRotate);
+                    RadioButton checkedRadioButtonRotate = (RadioButton) rGroupRotate.findViewById(rGroupRotate.getCheckedRadioButtonId());
+                    switch (checkedRadioButtonRotate.getId()) {
                         case R.id.clockwise:
                             angle = 90;
                             break;
@@ -145,15 +147,16 @@ public class MainActivity extends AppCompatActivity {
                         default:
                     }
 
-                    System.out.println("Starting : "+activityClass.getName());
+                    System.out.println("Starting : " + activityClass.getName());
                     Intent processIntent = new Intent(this.getApplicationContext(), activityClass);
                     processIntent.putExtra("threads", threadsCount);
                     processIntent.putExtra("rotateBy", angle);
-                    startActivityForResult(processIntent,2);
+                    processIntent.putExtra("runHundredTimes", runHundredTimes);
+                    startActivityForResult(processIntent, 2);
                 }
                 break;
             case 2:
-                if(data!=null){
+                if (data != null) {
                     imageDisplay.setImageBitmap(input);
                     bitmap.recycle();
                 }
