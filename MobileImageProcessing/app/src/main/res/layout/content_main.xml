@@ -163,7 +163,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Run test 100 times"
+        android:text="Run test 20 times"
         android:id="@+id/checkBox"
         android:layout_marginStart="31dp"
         android:layout_alignBottom="@+id/btnGallery"

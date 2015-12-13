@@ -4,13 +4,9 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 
-/**
- * Created by arthurkam on 2015-11-21.
- */
-
 public class PixelateImageProcessingActivity extends BaseImageProcessingActivity {
-    private static final int X_BOX = 120;
-    private static final int Y_BOX = 120;
+    private static final int X_BOX = 80;
+    private static final int Y_BOX = 80;
 
     @Override
     public int[][] processImageSequential(int[][] image) {
@@ -160,7 +156,6 @@ public class PixelateImageProcessingActivity extends BaseImageProcessingActivity
                 e.printStackTrace();
             }
         }
-        System.out.println("Done!");
         return image;
 
     }

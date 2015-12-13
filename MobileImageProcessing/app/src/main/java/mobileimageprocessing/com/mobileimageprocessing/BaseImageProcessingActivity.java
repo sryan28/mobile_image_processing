@@ -10,7 +10,7 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
     private long[] times;
     public static int THREAD_COUNT;
     public static int angle;
-    private final int TEST_ITERATIONS = 100;
+    private final int TEST_ITERATIONS = 20;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Intent intent = getIntent();
@@ -24,9 +24,10 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
             Bitmap bitmap = MainActivity.bitmap;
             int[][] image = arrayFromBitmap(bitmap);
             times = new long[3];
+            int[][] seqRes = null;
             for (int i = 0; i < TEST_ITERATIONS; i++) {
                 // Run the tests, add to results
-                processImageSequentialTimed(cloneInt2dArray(image));
+                seqRes = processImageSequentialTimed(cloneInt2dArray(image));
                 processImageThreadsTimed(cloneInt2dArray(image));
                 processImageLooperTimed(cloneInt2dArray(image));
                 for(int j=0;j<3;j++){
@@ -37,6 +38,8 @@ public class BaseImageProcessingActivity extends AppCompatActivity {
                 totalTimes[j]/=TEST_ITERATIONS;
                 times[j] = totalTimes[j];
             }
+            Bitmap bitmapOutput = bitmapFromArray(seqRes);
+            MainActivity.input = bitmapOutput;
         } else {
             times = new long[3];
             Bitmap bitmap = MainActivity.bitmap;

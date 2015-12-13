@@ -32,7 +32,6 @@ public class ScaleImageProcessingActivity extends BaseImageProcessingActivity {
 
         sr = scale(origWidth, w);
         sc = scale(origHeight, h);
-
         int[][] result = new int[w][h];
 
         result = bilinearInterpolation(image, 0, w, h, sr, sc, result);

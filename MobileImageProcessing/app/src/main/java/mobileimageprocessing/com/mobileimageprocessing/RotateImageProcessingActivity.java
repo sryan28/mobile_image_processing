@@ -176,7 +176,6 @@ public class RotateImageProcessingActivity extends BaseImageProcessingActivity {
                 e.printStackTrace();
             }
         }
-        System.out.println("Done!");
         return newImage;
     }
 
